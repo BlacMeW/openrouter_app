@@ -55,11 +55,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom() {
-    _scrollController.scrollTo(
-      index: 0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    final state = context.read<ChatBloc>().state;
+    if (state is ChatLoaded && state.messages.isNotEmpty) {
+      _scrollController.scrollTo(
+        index: state.messages.length - 1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void _sendMessage() {
@@ -147,7 +150,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: ScrollablePositionedList.builder(
                           itemScrollController: _scrollController,
                           itemPositionsListener: _itemPositionsListener,
-                          reverse: true,
+                          reverse: false,
                           padding: const EdgeInsets.all(16),
                           itemCount: state.messages.length,
                           itemBuilder: (context, index) {

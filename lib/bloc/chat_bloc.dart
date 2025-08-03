@@ -63,30 +63,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       description: 'Meta Llama 3.1 8B Instruct - Free tier',
       provider: 'Meta',
     ),
-    AIModel(
-      id: 'microsoft/phi-3-mini-128k-instruct:free',
-      name: 'Phi-3 Mini 128K (Free)',
-      description: 'Microsoft Phi-3 Mini 128K Instruct - Free tier',
-      provider: 'Microsoft',
-    ),
+    // Removed: microsoft/phi-3-mini-128k-instruct:free - returns 404
     AIModel(
       id: 'mistralai/mistral-7b-instruct:free',
       name: 'Mistral 7B (Free)',
       description: 'Mistral 7B Instruct - Free tier',
       provider: 'Mistral AI',
     ),
-    AIModel(
-      id: 'openchat/openchat-7b:free',
-      name: 'OpenChat 7B (Free)',
-      description: 'OpenChat 7B - Free tier',
-      provider: 'OpenChat',
-    ),
-    AIModel(
-      id: 'gryphe/mythomax-l2-13b:free',
-      name: 'Mythomax L2 13B (Free)',
-      description: 'Gryphe Mythomax L2 13B - Free tier',
-      provider: 'Gryphe',
-    ),
+    // Removed: openchat/openchat-7b:free - returns 404
+    // Removed: gryphe/mythomax-l2-13b:free - returns 404
     // Additional Free Models
     AIModel(
       id: 'deepseek/deepseek-chat:free',
@@ -94,24 +79,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       description: 'DeepSeek Chat - Free tier',
       provider: 'DeepSeek',
     ),
-    AIModel(
-      id: 'deepseek/deepseek-coder:free',
-      name: 'DeepSeek Coder (Free)',
-      description: 'DeepSeek Coder - Free tier',
-      provider: 'DeepSeek',
-    ),
-    AIModel(
-      id: 'moonshotai/kimi-free-2:free',
-      name: 'Kimi 2 (Free)',
-      description: 'Moonshot AI Kimi 2 - Free tier',
-      provider: 'Moonshot AI',
-    ),
-    AIModel(
-      id: 'qwen/qwen-2.5-coder-7b:free',
-      name: 'Qwen 2.5 Coder 7B (Free)',
-      description: 'Qwen 2.5 Coder 7B - Free tier',
-      provider: 'Qwen',
-    ),
+    // Removed: moonshotai/kimi-k2:free - returns 404
     AIModel(
       id: 'qwen/qwen-2.5-7b-instruct:free',
       name: 'Qwen 2.5 7B (Free)',
@@ -187,6 +155,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final apiKey = await _secureStorage.read(key: 'openrouter_api_key');
       final url = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
 
+      // Diagnostic logging for model validation
+      print('🔍 DIAGNOSTIC: Attempting to use model: $modelId');
+      print('🔍 DIAGNOSTIC: Request URL: $url');
+      print('🔍 DIAGNOSTIC: API Key present: ${apiKey != null ? 'Yes' : 'No'}');
+
       final request = http.Request('POST', url);
 
       request.headers.addAll({
@@ -196,16 +169,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         'X-Title': 'AI Coder Chat',
       });
 
-      request.body = jsonEncode({
+      final requestBody = {
         'model': modelId,
         'messages': [
           {'role': 'user', 'content': message},
         ],
         'stream': true,
         'temperature': 0.7,
-      });
+      };
+
+      print('🔍 DIAGNOSTIC: Request body: ${jsonEncode(requestBody)}');
+      request.body = jsonEncode(requestBody);
 
       final streamedResponse = await request.send();
+
+      print('🔍 DIAGNOSTIC: Response status: ${streamedResponse.statusCode}');
+      print('🔍 DIAGNOSTIC: Response reason: ${streamedResponse.reasonPhrase}');
 
       if (streamedResponse.statusCode == 200) {
         final stream = streamedResponse.stream;
@@ -266,9 +245,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(ChatError('Rate limit exceeded (429): Too many requests. Please wait before making more requests.'));
       } else if (streamedResponse.statusCode == 400) {
         final errorBody = await streamedResponse.stream.bytesToString();
-        emit(ChatError('Bad request (400): $errorBody'));
+        print('🔍 DIAGNOSTIC: 400 Bad Request for model: $modelId');
+        print('🔍 DIAGNOSTIC: Error response: $errorBody');
+        emit(ChatError('Bad request (400): Model "$modelId" - $errorBody'));
+      } else if (streamedResponse.statusCode == 404) {
+        final errorBody = await streamedResponse.stream.bytesToString();
+        print('🔍 DIAGNOSTIC: 404 Not Found for model: $modelId');
+        print('🔍 DIAGNOSTIC: Error response: $errorBody');
+        emit(ChatError('Model not found (404): "$modelId" - This model may no longer be available'));
       } else {
-        emit(ChatError('HTTP Error (${streamedResponse.statusCode}): ${streamedResponse.reasonPhrase}'));
+        final errorBody = await streamedResponse.stream.bytesToString();
+        print('🔍 DIAGNOSTIC: HTTP ${streamedResponse.statusCode} for model: $modelId');
+        print('🔍 DIAGNOSTIC: Error response: $errorBody');
+        emit(ChatError('HTTP Error (${streamedResponse.statusCode}): Model "$modelId" - ${streamedResponse.reasonPhrase}'));
       }
     } on http.ClientException catch (e) {
       emit(ChatError('Network error: ${e.message}\n\nPlease check your internet connection.'));
@@ -379,4 +368,60 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   List<AIModel> get availableModels => _availableModels;
+
+  // Diagnostic method to validate all models
+  Future<Map<String, dynamic>> validateModels() async {
+    print('🔍 DIAGNOSTIC: Starting model validation...');
+    final results = <String, dynamic>{
+      'total_models': _availableModels.length,
+      'valid_models': [],
+      'invalid_models': [],
+      'errors': {},
+    };
+
+    final apiKey = await _secureStorage.read(key: 'openrouter_api_key');
+    if (apiKey == null) {
+      results['error'] = 'API key not found';
+      return results;
+    }
+
+    // Get available models from OpenRouter
+    try {
+      final url = Uri.parse('https://openrouter.ai/api/v1/models');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final availableModelIds = (data['data'] as List)
+            .map((model) => model['id'] as String)
+            .toSet();
+
+        print('🔍 DIAGNOSTIC: Found ${availableModelIds.length} available models from OpenRouter');
+
+        for (final model in _availableModels) {
+          if (availableModelIds.contains(model.id)) {
+            results['valid_models'].add(model.id);
+            print('🔍 DIAGNOSTIC: ✅ Valid model: ${model.id}');
+          } else {
+            results['invalid_models'].add(model.id);
+            results['errors'][model.id] = 'Model not found in OpenRouter API';
+            print('🔍 DIAGNOSTIC: ❌ Invalid model: ${model.id}');
+          }
+        }
+      } else {
+        results['error'] = 'Failed to fetch models: ${response.statusCode}';
+        print('🔍 DIAGNOSTIC: Failed to fetch models: ${response.statusCode}');
+      }
+    } catch (e) {
+      results['error'] = 'Validation error: ${e.toString()}';
+      print('🔍 DIAGNOSTIC: Validation error: $e');
+    }
+
+    return results;
+  }
 }
