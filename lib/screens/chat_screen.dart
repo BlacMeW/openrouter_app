@@ -32,6 +32,14 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ChatBloc>().add(const LoadChatHistory());
     });
+    // Add listener for message changes to auto-scroll
+    context.read<ChatBloc>().stream.listen((state) {
+      if (state is ChatLoaded && state.messages.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
+      }
+    });
   }
 
   @override
@@ -78,6 +86,11 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       context.read<ChatBloc>().add(SendMessage(message: message, modelId: modelId));
+
+      // Auto-scroll to bottom after sending message
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
     }
   }
 

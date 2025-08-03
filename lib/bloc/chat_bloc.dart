@@ -38,7 +38,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     //   description: 'Google Gemini Pro',
     //   provider: 'Google',
     // ),
-    // Free AI Models from OpenRouter
+    // Free AI Models from OpenRouter - Updated with valid models
     AIModel(
       id: 'google/gemini-2.0-flash-exp:free',
       name: 'Gemini 2.0 Flash (Free)',
@@ -63,15 +63,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       description: 'Meta Llama 3.1 8B Instruct - Free tier',
       provider: 'Meta',
     ),
-    // Removed: microsoft/phi-3-mini-128k-instruct:free - returns 404
+    AIModel(
+      id: 'meta-llama/llama-3.2-1b-instruct:free',
+      name: 'Llama 3.2 1B (Free)',
+      description: 'Meta Llama 3.2 1B Instruct - Free tier',
+      provider: 'Meta',
+    ),
     AIModel(
       id: 'mistralai/mistral-7b-instruct:free',
       name: 'Mistral 7B (Free)',
       description: 'Mistral 7B Instruct - Free tier',
       provider: 'Mistral AI',
     ),
-    // Removed: openchat/openchat-7b:free - returns 404
-    // Removed: gryphe/mythomax-l2-13b:free - returns 404
+    AIModel(
+      id: 'mistralai/mistral-nemo:free',
+      name: 'Mistral Nemo (Free)',
+      description: 'Mistral Nemo 12B - Free tier',
+      provider: 'Mistral AI',
+    ),
     // Additional Free Models
     AIModel(
       id: 'deepseek/deepseek-chat:free',
@@ -79,11 +88,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       description: 'DeepSeek Chat - Free tier',
       provider: 'DeepSeek',
     ),
-    // Removed: moonshotai/kimi-k2:free - returns 404
+    // Removed: qwen/qwen-2.5-7b-instruct:free - returns 404
     AIModel(
-      id: 'qwen/qwen-2.5-7b-instruct:free',
-      name: 'Qwen 2.5 7B (Free)',
-      description: 'Qwen 2.5 7B Instruct - Free tier',
+      id: 'qwen/qwen-2.5-coder-7b:free',
+      name: 'Qwen 2.5 Coder 7B (Free)',
+      description: 'Qwen 2.5 Coder 7B - Free tier',
       provider: 'Qwen',
     ),
     AIModel(
@@ -103,6 +112,61 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       name: 'Zephyr 7B Beta (Free)',
       description: 'Hugging Face Zephyr 7B Beta - Free tier',
       provider: 'Hugging Face',
+    ),
+    // New valid free models
+    AIModel(
+      id: 'microsoft/phi-3.5-mini-instruct:free',
+      name: 'Phi 3.5 Mini (Free)',
+      description: 'Microsoft Phi 3.5 Mini Instruct - Free tier',
+      provider: 'Microsoft',
+    ),
+    AIModel(
+      id: '01-ai/yi-1.5-9b-chat:free',
+      name: 'Yi 1.5 9B Chat (Free)',
+      description: '01.AI Yi 1.5 9B Chat - Free tier',
+      provider: '01.AI',
+    ),
+    AIModel(
+      id: 'openchat/openchat-3.5-0106:free',
+      name: 'OpenChat 3.5 (Free)',
+      description: 'OpenChat 3.5 0106 - Free tier',
+      provider: 'OpenChat',
+    ),
+    AIModel(
+      id: 'teknium/openhermes-2.5-mistral-7b:free',
+      name: 'OpenHermes 2.5 (Free)',
+      description: 'Teknium OpenHermes 2.5 Mistral 7B - Free tier',
+      provider: 'Teknium',
+    ),
+    AIModel(
+      id: 'sophosympatheia/midnight-rose-70b:free',
+      name: 'Midnight Rose 70B (Free)',
+      description: 'Sophosympatheia Midnight Rose 70B - Free tier',
+      provider: 'Sophosympatheia',
+    ),
+    AIModel(
+      id: 'undi95/toppy-m-7b:free',
+      name: 'Toppy M 7B (Free)',
+      description: 'Undi95 Toppy M 7B - Free tier',
+      provider: 'Undi95',
+    ),
+    AIModel(
+      id: 'gryphe/mythomist-7b:free',
+      name: 'MythoMist 7B (Free)',
+      description: 'Gryphe MythoMist 7B - Free tier',
+      provider: 'Gryphe',
+    ),
+    AIModel(
+      id: 'neversleep/llama-3-lumimaid-8b:free',
+      name: 'Lumimaid 8B (Free)',
+      description: 'NeverSleep Llama 3 Lumimaid 8B - Free tier',
+      provider: 'NeverSleep',
+    ),
+    AIModel(
+      id: 'moonshotai/kimi-1.5-8b:free',
+      name: 'Kimi 1.5 8B (Free)',
+      description: 'Moonshot AI Kimi 1.5 8B - Free tier',
+      provider: 'Moonshot AI',
     ),
   ];
 
