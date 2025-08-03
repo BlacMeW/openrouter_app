@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'bloc/chat_bloc.dart';
 import 'providers/theme_provider.dart';
 import 'screens/chat_screen.dart';
+import 'screens/model_management_screen.dart';
 import 'screens/settings_screen.dart';
 import 'themes/app_theme.dart';
 
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
             home: const ChatScreen(),
             routes: {
               '/settings': (context) => const SettingsScreen(),
+              '/models': (context) => const ModelManagementScreen(),
             },
           );
         },

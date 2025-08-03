@@ -88,11 +88,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       description: 'DeepSeek Chat - Free tier',
       provider: 'DeepSeek',
     ),
-    // Removed: qwen/qwen-2.5-7b-instruct:free - returns 404
+    // // Removed: qwen/qwen-2.5-7b-instruct:free - returns 404
     AIModel(
-      id: 'qwen/qwen-2.5-coder-7b:free',
-      name: 'Qwen 2.5 Coder 7B (Free)',
-      description: 'Qwen 2.5 Coder 7B - Free tier',
+      id: 'qwen/qwen3-coder:free',
+      name: 'Qwen 3 Coder (Free)',
+      description: 'Qwen 3 Coder - Free tier',
       provider: 'Qwen',
     ),
     AIModel(
@@ -170,7 +170,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ),
   ];
 
+ // Method to update available models
+ void updateAvailableModels(List<AIModel> newModels) {
+   _availableModels.clear();
+   _availableModels.addAll(newModels);
+ }
+
+ // Method to load models from storage
+ Future<List<AIModel>> loadModelsFromStorage() async {
+   try {
+     final savedModels = await _secureStorage.read(key: 'selected_models');
+     if (savedModels != null) {
+       final List<dynamic> jsonList = jsonDecode(savedModels);
+       return jsonList.map((json) => AIModel.fromJson(json)).toList();
+     }
+   } catch (e) {
+     // If there's an error loading saved models, return the default models
+     print('Error loading models from storage: $e');
+   }
+   return List.from(_availableModels);
+ }
+
   ChatBloc() : super(const ChatInitial()) {
+    // Load models from storage on initialization
+    _initModels();
     on<SendMessage>(_onSendMessage);
     on<StartTyping>(_onStartTyping);
     on<StopTyping>(_onStopTyping);
@@ -179,6 +202,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<AddMessage>(_onAddMessage);
     on<UpdateStreamingMessage>(_onUpdateStreamingMessage);
     on<SelectModel>(_onSelectModel);
+  }
+
+  Future<void> _initModels() async {
+    try {
+      final savedModels = await loadModelsFromStorage();
+      if (savedModels.isNotEmpty) {
+        _availableModels.clear();
+        _availableModels.addAll(savedModels);
+      }
+    } catch (e) {
+      print('Error initializing models: $e');
+    }
   }
 
   Future<void> _onSendMessage(SendMessage event, Emitter<ChatState> emit) async {

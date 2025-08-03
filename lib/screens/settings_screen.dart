@@ -238,9 +238,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                  const SizedBox(height: 20),
+                  Card(
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Model Management',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                         const Text(
+                           'Manage and customize the AI models available in the chat',
+                           style: TextStyle(
+                             fontSize: 14,
+                             color: Colors.grey,
+                           ),
+                         ),
+                         const SizedBox(height: 16),
+                         SizedBox(
+                           width: double.infinity,
+                           child: ElevatedButton.icon(
+                             onPressed: () {
+                               Navigator.pushNamed(context, '/models');
+                             },
+                             icon: const Icon(Icons.manage_accounts),
+                             label: const Text('Manage Models'),
+                             style: ElevatedButton.styleFrom(
+                               padding: const EdgeInsets.symmetric(vertical: 16),
+                               shape: RoundedRectangleBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                               ),
+                             ),
+                           ),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+               ],
+             ),
+           ),
     );
   }
 }
