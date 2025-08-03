@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
-import '../models/chat_message.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/typing_indicator.dart';
 import '../widgets/chat_input.dart';
@@ -167,9 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         focusNode: _focusNode,
                         onSend: _sendMessage,
                         onModelSelected: (modelId) {
-                          if (state is ChatLoaded) {
-                            context.read<ChatBloc>().saveSelectedModel(modelId);
-                          }
+                          context.read<ChatBloc>().saveSelectedModel(modelId);
                         },
                       ),
                     ],

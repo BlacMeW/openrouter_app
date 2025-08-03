@@ -113,7 +113,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       if (streamedResponse.statusCode == 200) {
         final stream = streamedResponse.stream;
         final contentBuffer = StringBuffer();
-        bool firstChunk = true;
 
         await for (final chunk in stream.transform(utf8.decoder)) {
           if (chunk.trim().isNotEmpty) {

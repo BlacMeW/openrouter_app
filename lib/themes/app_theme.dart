@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const Color _primaryColor = Color(0xFF6366f1);
   static const Color _secondaryColor = Color(0xFF8b5cf6);
-  static const Color _backgroundColor = Color(0xFFffffff);
   static const Color _surfaceColor = Color(0xFFf8fafc);
   static const Color _errorColor = Color(0xFFef4444);
   static const Color _onSurfaceColor = Color(0xFF1e293b);
-  static const Color _onBackgroundColor = Color(0xFF0f172a);
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -15,10 +13,8 @@ class AppTheme {
       primary: _primaryColor,
       secondary: _secondaryColor,
       surface: _surfaceColor,
-      background: _backgroundColor,
-      error: _errorColor,
       onSurface: _onSurfaceColor,
-      onBackground: _onBackgroundColor,
+      error: _errorColor,
       brightness: Brightness.light,
     ),
     appBarTheme: const AppBarTheme(
@@ -61,11 +57,11 @@ class AppTheme {
       fillColor: _surfaceColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primaryColor.withOpacity(0.3)),
+        borderSide: BorderSide(color: _primaryColor.withValues(alpha: 0.3)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primaryColor.withOpacity(0.3)),
+        borderSide: BorderSide(color: _primaryColor.withValues(alpha: 0.3)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -118,10 +114,8 @@ class AppTheme {
       primary: _primaryColor,
       secondary: _secondaryColor,
       surface: Color(0xFF1e293b),
-      background: Color(0xFF0f172a),
       error: _errorColor,
       onSurface: Color(0xFFf1f5f9),
-      onBackground: Color(0xFFf8fafc),
       brightness: Brightness.dark,
     ),
     appBarTheme: const AppBarTheme(
@@ -164,11 +158,11 @@ class AppTheme {
       fillColor: Color(0xFF1e293b),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primaryColor.withOpacity(0.3)),
+        borderSide: BorderSide(color: _primaryColor.withValues(alpha: 0.3)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primaryColor.withOpacity(0.3)),
+        borderSide: BorderSide(color: _primaryColor.withValues(alpha: 0.3)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

@@ -232,7 +232,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               decoration: InputDecoration(
                 hintText: 'sk-or-...',
                 hintStyle: TextStyle(
-                  color: Theme.of(context).hintColor.withOpacity(0.7),
+                  color: Theme.of(context).hintColor.withValues(alpha: 0.7),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -261,7 +261,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text(
               'Get your API key from: https://openrouter.ai/keys',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontSize: 12,
               ),
             ),

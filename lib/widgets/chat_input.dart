@@ -33,7 +33,7 @@ class _ChatInputState extends State<ChatInput> {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -62,7 +62,7 @@ class _ChatInputState extends State<ChatInput> {
                     decoration: InputDecoration(
                       hintText: 'Ask me anything about coding...',
                       hintStyle: TextStyle(
-                        color: Theme.of(context).hintColor.withOpacity(0.7),
+                        color: Theme.of(context).hintColor.withValues(alpha: 0.7),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
@@ -152,7 +152,7 @@ class _ModelSelector extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(

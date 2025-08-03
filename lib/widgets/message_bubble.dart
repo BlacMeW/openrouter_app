@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
 import '../models/chat_message.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -50,11 +48,11 @@ class MessageBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isUser
                     ? theme.colorScheme.primaryContainer
-                    : theme.colorScheme.surfaceVariant,
+                    : theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -90,8 +88,8 @@ class MessageBubble extends StatelessWidget {
                         ),
                         codeblockDecoration: BoxDecoration(
                           color: isUser
-                              ? theme.colorScheme.primaryContainer.withOpacity(0.3)
-                              : theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+                              : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         codeblockPadding: const EdgeInsets.all(12),
@@ -115,7 +113,7 @@ class MessageBubble extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
