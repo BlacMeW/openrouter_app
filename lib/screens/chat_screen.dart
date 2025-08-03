@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
+import '../models/chat_message.dart';
+import '../widgets/chat_input.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/typing_indicator.dart';
-import '../widgets/chat_input.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -26,6 +28,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _itemPositionsListener.itemPositions.addListener(_updateScrollButtonVisibility);
+    // Load chat history and initialize the bloc
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatBloc>().add(const LoadChatHistory());
+    });
   }
 
   @override
@@ -147,14 +153,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemBuilder: (context, index) {
                             final message = state.messages[index];
                             return MessageBubble(
-                              message: message,
-                              onModelChanged: (modelId) {
-                                context.read<ChatBloc>().add(AddMessage(
-                                  message: message.copyWith(
-                                    content: 'Model changed to: $modelId',
-                                  ),
-                                ));
-                              },
+                              text: message.content,
+                              isUser: message.type == MessageType.user,
+                              timestamp: message.timestamp,
                             );
                           },
                         ),
@@ -165,7 +166,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         focusNode: _focusNode,
                         onSend: _sendMessage,
                         onModelSelected: (modelId) {
-                          context.read<ChatBloc>().saveSelectedModel(modelId);
+                          final bloc = context.read<ChatBloc>();
+                          final model = bloc.availableModels.firstWhere(
+                            (m) => m.id == modelId,
+                            orElse: () => bloc.availableModels.first,
+                          );
+                          bloc.add(SelectModel(model: model));
                         },
                       ),
                     ],
@@ -198,10 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
         title: const Text('Clear Chat'),
         content: const Text('Are you sure you want to clear all messages?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               context.read<ChatBloc>().add(const ClearChat());

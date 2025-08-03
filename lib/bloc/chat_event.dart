@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../models/chat_message.dart';
+import '../models/ai_model.dart';
 
 abstract class ChatEvent extends Equatable {
   const ChatEvent();
@@ -68,4 +69,13 @@ class UpdateStreamingMessage extends ChatEvent {
 
   @override
   List<Object> get props => [messageId, content];
+}
+
+class SelectModel extends ChatEvent {
+  final AIModel model;
+
+  const SelectModel({required this.model});
+
+  @override
+  List<Object> get props => [model];
 }

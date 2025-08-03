@@ -56,8 +56,8 @@ class _ChatInputState extends State<ChatInput> {
                   child: TextField(
                     controller: widget.controller,
                     focusNode: widget.focusNode,
-                    maxLines: null,
-                    minLines: 1,
+                    maxLines: _isExpanded ? null : 1,
+                    minLines: _isExpanded ? null : 1,
                     expands: _isExpanded,
                     decoration: InputDecoration(
                       hintText: 'Ask me anything about coding...',
@@ -149,47 +149,42 @@ class _ModelSelector extends StatelessWidget {
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
         if (state is ChatLoaded) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.smart_toy,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                DropdownButton<AIModel>(
-                  value: state.selectedModel,
-                  underline: Container(),
-                  isDense: true,
-                  iconSize: 20,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  onChanged: (model) {
-                    if (model != null) {
-                      onModelSelected(model.id);
-                    }
-                  },
-                  items: context.read<ChatBloc>().availableModels.map((AIModel model) {
-                    return DropdownMenuItem<AIModel>(
-                      value: model,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
+          return PopupMenuButton<AIModel>(
+            onSelected: (model) {
+              onModelSelected(model.id);
+            },
+            itemBuilder: (context) {
+              return context.read<ChatBloc>().availableModels.map((model) {
+                final isSelected = model.id == state.selectedModel?.id;
+                return PopupMenuItem<AIModel>(
+                  value: model,
+                  child: Container(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                        : null,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
                             model.name,
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurface,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          if (model.isDefault)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 4),
+                        ),
+                        if (model.isDefault)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               child: Text(
                                 'Default',
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -198,12 +193,42 @@ class _ModelSelector extends StatelessWidget {
                                 ),
                               ),
                             ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.smart_toy,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    state.selectedModel?.name ?? 'Select Model',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
             ),
           );
         }

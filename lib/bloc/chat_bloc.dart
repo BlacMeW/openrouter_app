@@ -1,40 +1,140 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../models/chat_message.dart';
+import 'package:http/http.dart' as http;
+
 import '../models/ai_model.dart';
+import '../models/chat_message.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final List<AIModel> _availableModels = [
+    // AIModel(
+    //   id: 'openai/gpt-4',
+    //   name: 'GPT-4',
+    //   description: 'OpenAI GPT-4',
+    //   provider: 'OpenAI',
+    //   isDefault: true,
+    // ),
+    // AIModel(
+    //   id: 'anthropic/claude-3-haiku',
+    //   name: 'Claude 3 Haiku',
+    //   description: 'Anthropic Claude 3 Haiku',
+    //   provider: 'Anthropic',
+    // ),
+    // AIModel(
+    //   id: 'mistralai/mixtral-8x7b',
+    //   name: 'Mixtral 8x7B',
+    //   description: 'Mistral AI Mixtral 8x7B',
+    //   provider: 'Mistral AI',
+    // ),
+    // AIModel(
+    //   id: 'google/gemini-pro',
+    //   name: 'Gemini Pro',
+    //   description: 'Google Gemini Pro',
+    //   provider: 'Google',
+    // ),
+    // Free AI Models from OpenRouter
     AIModel(
-      id: 'openai/gpt-4',
-      name: 'GPT-4',
-      description: 'OpenAI GPT-4',
-      provider: 'OpenAI',
-      isDefault: true,
+      id: 'google/gemini-2.0-flash-exp:free',
+      name: 'Gemini 2.0 Flash (Free)',
+      description: 'Google Gemini 2.0 Flash - Free tier',
+      provider: 'Google',
     ),
     AIModel(
-      id: 'anthropic/claude-3-haiku',
-      name: 'Claude 3 Haiku',
-      description: 'Anthropic Claude 3 Haiku',
-      provider: 'Anthropic',
+      id: 'google/gemini-2.0-flash-thinking-exp:free',
+      name: 'Gemini 2.0 Flash Thinking (Free)',
+      description: 'Google Gemini 2.0 Flash Thinking - Free tier',
+      provider: 'Google',
     ),
     AIModel(
-      id: 'mistralai/mixtral-8x7b',
-      name: 'Mixtral 8x7B',
-      description: 'Mistral AI Mixtral 8x7B',
+      id: 'meta-llama/llama-3.2-3b-instruct:free',
+      name: 'Llama 3.2 3B (Free)',
+      description: 'Meta Llama 3.2 3B Instruct - Free tier',
+      provider: 'Meta',
+    ),
+    AIModel(
+      id: 'meta-llama/llama-3.1-8b-instruct:free',
+      name: 'Llama 3.1 8B (Free)',
+      description: 'Meta Llama 3.1 8B Instruct - Free tier',
+      provider: 'Meta',
+    ),
+    AIModel(
+      id: 'microsoft/phi-3-mini-128k-instruct:free',
+      name: 'Phi-3 Mini 128K (Free)',
+      description: 'Microsoft Phi-3 Mini 128K Instruct - Free tier',
+      provider: 'Microsoft',
+    ),
+    AIModel(
+      id: 'mistralai/mistral-7b-instruct:free',
+      name: 'Mistral 7B (Free)',
+      description: 'Mistral 7B Instruct - Free tier',
       provider: 'Mistral AI',
     ),
     AIModel(
-      id: 'google/gemini-pro',
-      name: 'Gemini Pro',
-      description: 'Google Gemini Pro',
-      provider: 'Google',
+      id: 'openchat/openchat-7b:free',
+      name: 'OpenChat 7B (Free)',
+      description: 'OpenChat 7B - Free tier',
+      provider: 'OpenChat',
+    ),
+    AIModel(
+      id: 'gryphe/mythomax-l2-13b:free',
+      name: 'Mythomax L2 13B (Free)',
+      description: 'Gryphe Mythomax L2 13B - Free tier',
+      provider: 'Gryphe',
+    ),
+    // Additional Free Models
+    AIModel(
+      id: 'deepseek/deepseek-chat:free',
+      name: 'DeepSeek Chat (Free)',
+      description: 'DeepSeek Chat - Free tier',
+      provider: 'DeepSeek',
+    ),
+    AIModel(
+      id: 'deepseek/deepseek-coder:free',
+      name: 'DeepSeek Coder (Free)',
+      description: 'DeepSeek Coder - Free tier',
+      provider: 'DeepSeek',
+    ),
+    AIModel(
+      id: 'moonshotai/kimi-free-2:free',
+      name: 'Kimi 2 (Free)',
+      description: 'Moonshot AI Kimi 2 - Free tier',
+      provider: 'Moonshot AI',
+    ),
+    AIModel(
+      id: 'qwen/qwen-2.5-coder-7b:free',
+      name: 'Qwen 2.5 Coder 7B (Free)',
+      description: 'Qwen 2.5 Coder 7B - Free tier',
+      provider: 'Qwen',
+    ),
+    AIModel(
+      id: 'qwen/qwen-2.5-7b-instruct:free',
+      name: 'Qwen 2.5 7B (Free)',
+      description: 'Qwen 2.5 7B Instruct - Free tier',
+      provider: 'Qwen',
+    ),
+    AIModel(
+      id: 'cohere/command-r7b-12-2024:free',
+      name: 'Command R7B (Free)',
+      description: 'Cohere Command R7B - Free tier',
+      provider: 'Cohere',
+    ),
+    AIModel(
+      id: 'nousresearch/hermes-3-llama-3.1-8b:free',
+      name: 'Hermes 3 8B (Free)',
+      description: 'Nous Research Hermes 3 Llama 3.1 8B - Free tier',
+      provider: 'Nous Research',
+    ),
+    AIModel(
+      id: 'huggingfaceh4/zephyr-7b-beta:free',
+      name: 'Zephyr 7B Beta (Free)',
+      description: 'Hugging Face Zephyr 7B Beta - Free tier',
+      provider: 'Hugging Face',
     ),
   ];
 
@@ -46,18 +146,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadChatHistory>(_onLoadChatHistory);
     on<AddMessage>(_onAddMessage);
     on<UpdateStreamingMessage>(_onUpdateStreamingMessage);
+    on<SelectModel>(_onSelectModel);
   }
 
-  Future<void> _onSendMessage(
-    SendMessage event,
-    Emitter<ChatState> emit,
-  ) async {
+  Future<void> _onSendMessage(SendMessage event, Emitter<ChatState> emit) async {
     try {
-      emit(ChatLoaded(
-        messages: [...(state is ChatLoaded ? (state as ChatLoaded).messages : [])],
-        selectedModel: _getSelectedModel(event.modelId),
-        isTyping: true,
-      ));
+      emit(
+        ChatLoaded(
+          messages: [...(state is ChatLoaded ? (state as ChatLoaded).messages : [])],
+          selectedModel: _getSelectedModel(event.modelId),
+          isTyping: true,
+        ),
+      );
 
       final userMessage = ChatMessage.user(event.message);
       add(AddMessage(message: userMessage));
@@ -87,10 +187,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final apiKey = await _secureStorage.read(key: 'openrouter_api_key');
       final url = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
 
-      final request = http.Request(
-        'POST',
-        url,
-      );
+      final request = http.Request('POST', url);
 
       request.headers.addAll({
         'Content-Type': 'application/json',
@@ -102,7 +199,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       request.body = jsonEncode({
         'model': modelId,
         'messages': [
-          {'role': 'user', 'content': message}
+          {'role': 'user', 'content': message},
         ],
         'stream': true,
         'temperature': 0.7,
@@ -128,10 +225,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                   final content = json['choices']?[0]?['delta']?['content'];
                   if (content != null) {
                     contentBuffer.write(content);
-                    add(UpdateStreamingMessage(
-                      messageId: messageId,
-                      content: contentBuffer.toString(),
-                    ));
+                    add(
+                      UpdateStreamingMessage(
+                        messageId: messageId,
+                        content: contentBuffer.toString(),
+                      ),
+                    );
                   }
                 } catch (e) {
                   // Skip malformed JSON chunks
@@ -142,15 +241,43 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }
 
         // Final update with complete content
-        add(UpdateStreamingMessage(
-          messageId: messageId,
-          content: contentBuffer.toString(),
-        ));
+        add(UpdateStreamingMessage(messageId: messageId, content: contentBuffer.toString()));
+      } else if (streamedResponse.statusCode == 403) {
+        // Handle 403 Forbidden errors specifically
+        final errorBody = await streamedResponse.stream.bytesToString();
+        String errorMessage = 'Access denied (403): ';
+
+        if (errorBody.contains('insufficient_quota')) {
+          errorMessage += 'Insufficient credits. Please add credits to your OpenRouter account.';
+        } else if (errorBody.contains('rate_limit')) {
+          errorMessage += 'Rate limit exceeded. Please wait before making more requests.';
+        } else if (errorBody.contains('invalid_api_key')) {
+          errorMessage += 'Invalid API key. Please check your API key in settings.';
+        } else {
+          errorMessage += 'Access forbidden. This might be due to model restrictions or account limitations.';
+        }
+
+        errorMessage += '\n\nTroubleshooting:\n1. Check your API key in Settings\n2. Verify your OpenRouter account has sufficient credits\n3. Try a different free model\n4. Check OpenRouter status page';
+
+        emit(ChatError(errorMessage));
+      } else if (streamedResponse.statusCode == 401) {
+        emit(ChatError('Authentication failed (401): Invalid API key. Please check your API key in Settings.'));
+      } else if (streamedResponse.statusCode == 429) {
+        emit(ChatError('Rate limit exceeded (429): Too many requests. Please wait before making more requests.'));
+      } else if (streamedResponse.statusCode == 400) {
+        final errorBody = await streamedResponse.stream.bytesToString();
+        emit(ChatError('Bad request (400): $errorBody'));
       } else {
-        throw Exception('Failed to get response: ${streamedResponse.statusCode}');
+        emit(ChatError('HTTP Error (${streamedResponse.statusCode}): ${streamedResponse.reasonPhrase}'));
       }
+    } on http.ClientException catch (e) {
+      emit(ChatError('Network error: ${e.message}\n\nPlease check your internet connection.'));
+    } on FormatException catch (e) {
+      emit(ChatError('Data format error: ${e.message}\n\nThe response format is invalid.'));
+    } on TimeoutException catch (e) {
+      emit(ChatError('Request timeout: ${e.message}\n\nThe request took too long to complete.'));
     } catch (e) {
-      emit(ChatError('Streaming error: ${e.toString()}'));
+      emit(ChatError('Streaming error: ${e.toString()}\n\nPlease try again or check your settings.'));
     }
   }
 
@@ -170,10 +297,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(const ChatInitial());
   }
 
-  Future<void> _onLoadChatHistory(
-    LoadChatHistory event,
-    Emitter<ChatState> emit,
-  ) async {
+  Future<void> _onLoadChatHistory(LoadChatHistory event, Emitter<ChatState> emit) async {
     try {
       emit(const ChatLoading());
 
@@ -195,10 +319,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             )
           : _availableModels.first;
 
-      emit(ChatLoaded(
-        messages: messages,
-        selectedModel: selectedModel,
-      ));
+      emit(ChatLoaded(messages: messages, selectedModel: selectedModel));
     } catch (e) {
       emit(ChatError('Failed to load chat history: ${e.toString()}'));
     }
@@ -212,10 +333,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
-  void _onUpdateStreamingMessage(
-    UpdateStreamingMessage event,
-    Emitter<ChatState> emit,
-  ) {
+  void _onUpdateStreamingMessage(UpdateStreamingMessage event, Emitter<ChatState> emit) {
     if (state is ChatLoaded) {
       final currentState = state as ChatLoaded;
       final updatedMessages = currentState.messages.map((message) {
@@ -225,6 +343,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         return message;
       }).toList();
       emit(currentState.copyWith(messages: updatedMessages, isTyping: false));
+    }
+  }
+
+  Future<void> _onSelectModel(SelectModel event, Emitter<ChatState> emit) async {
+    if (state is ChatLoaded) {
+      final currentState = state as ChatLoaded;
+      emit(currentState.copyWith(selectedModel: event.model));
+      await saveSelectedModel(event.model.id);
     }
   }
 
@@ -238,10 +364,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<void> saveChatHistory(List<ChatMessage> messages) async {
     try {
       final jsonMessages = messages.map((message) => message.toJson()).toList();
-      await _secureStorage.write(
-        key: 'chat_history',
-        value: jsonEncode(jsonMessages),
-      );
+      await _secureStorage.write(key: 'chat_history', value: jsonEncode(jsonMessages));
     } catch (e) {
       // Handle error silently or log it
     }

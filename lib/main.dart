@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:provider/provider.dart';
 import 'bloc/chat_bloc.dart';
-import 'bloc/chat_event.dart';
+import 'providers/theme_provider.dart';
 import 'screens/chat_screen.dart';
 import 'screens/settings_screen.dart';
 import 'themes/app_theme.dart';
@@ -16,15 +16,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => ChatBloc()..add(const LoadChatHistory()))],
-      child: MaterialApp(
-        title: 'AI Coder Chat',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        home: const ChatScreen(),
-        routes: {'/settings': (context) => const SettingsScreen()},
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        BlocProvider(create: (_) => ChatBloc()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'AI Coder Chat',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            home: const ChatScreen(),
+            routes: {
+              '/settings': (context) => const SettingsScreen(),
+            },
+          );
+        },
       ),
     );
   }
